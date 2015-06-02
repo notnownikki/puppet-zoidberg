@@ -1,0 +1,11 @@
+{
+  "name": "gozerhp-zoidberg",
+  "version": "0.0.1",
+  "author": "Gozer Admins",
+  "summary": "Puppet module for Zoidberg",
+  "license": "Apache 2.0",
+  "source": "https://github.com/notnownikki/puppet-zoidberg.git",
+  "project_page": "https://github.com/notnownikki/puppet-zoidberg",
+  "issues_url": "https://github.com/notnownikki/puppet-zoidberg/issues",
+  "dependencies": []
+}
