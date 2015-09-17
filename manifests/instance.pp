@@ -22,15 +22,24 @@
 #  zoidberg::instance{ '/path/to/config/file.yaml': }
 #
 define zoidberg::instance (
-  $ensure = 'running',
+  $ensure  = 'running',
+  $logfile = '',
 ) {
-  $process = "zoidbergd -c $title"
+
+  if ($logfile != '') {
+    $process = "zoidbergd -c $title --logfile $logfile"
+  } else {
+    $process = "zoidbergd -c $title"
+  }
+
   $pid_finder = "ps ax | grep \"$process\"|grep -v grep|awk '{print \$1}'"
+
   if (!defined(File[$title])) {
     $subscribe = []
   } else {
     $subscribe = File[$title]
   }
+
   service { $title:
     provider => base,
     ensure => $ensure,
