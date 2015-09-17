@@ -16,11 +16,47 @@
 #
 # Class to install common zoidberg items.
 #
-class zoidberg {
+class zoidberg (
+  $install_from = 'pip',
+) {
 
-  package { 'zoidberg':
-    ensure   => 'present',
-    provider => 'pip',
+  case $install_from {
+    'pip': {
+      package { 'zoidberg':
+        ensure   => 'present',
+        provider => 'pip',
+      }
+    }
+
+    'git': {
+      $source_path = '/opt/zoidberg/src'
+      $virtualenv_path = '/opt/zoidberg/venv'
+
+      vcsrepo { $source_path:
+        ensure   => latest,
+        provider => 'git',
+        source   => 'https://github.com/notnownikki/zoidberg.git',
+        revision => 'master',
+      }
+
+      exec { 'create-zoidberg-virtualenv':
+        command => "/usr/local/bin/virtualenv ${virtualenv_path}",
+        creates => $virtualenv_path,
+      }
+
+      exec { 'install-zoidberg':
+        command     => "${virtualenv_path}/bin/pip install ${source_path}",
+        refreshonly => true,
+        subscribe   => Vcsrepo[$source_path],
+        require     => [
+          Vcsrepo[$source_path],
+          Exec['create-zoidberg-virtualenv'],
+        ],
+      }
+    }
+
+    default: {
+      fail("Unsupported install source: $install_from")
+    }
   }
-
 }
